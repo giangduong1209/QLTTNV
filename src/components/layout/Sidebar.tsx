@@ -10,7 +10,7 @@ export function Sidebar() {
   const links = [
     { href: "/dashboard", label: "Tổng quan", icon: BarChart3 },
     { href: "/employees", label: "Nhân viên", icon: Users },
-    { href: "/users", label: "Quản lý tài khoản", icon: Shield },
+
   ];
 
   return (
