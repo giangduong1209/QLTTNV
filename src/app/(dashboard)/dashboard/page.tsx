@@ -322,7 +322,7 @@ export default function Dashboard() {
                   />
                   <Tooltip
                     content={<CustomTooltip />}
-                    formatter={(v: number) => v.toLocaleString("vi-VN") + " ₫"}
+                    formatter={(v: any) => `${(v || 0).toLocaleString("vi-VN")} ₫`}
                   />
                   <Bar dataKey="avgSalary" name="Lương TB" radius={[0, 4, 4, 0]}>
                     {data?.avgSalaryByDept.map((_, i) => (
