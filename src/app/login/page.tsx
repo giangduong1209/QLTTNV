@@ -146,9 +146,15 @@ export default function LoginPage() {
           </form>
 
           {/* Footer info */}
-          <div className="mt-10 pt-8 border-t border-slate-700/50 text-center">
+          <div className="mt-10 pt-8 border-t border-slate-700/50 text-center space-y-3">
             <p className="text-slate-500 text-sm">
               &copy; 2026 <span className="text-slate-400 font-medium">QLTTNV</span>. Bản quyền thuộc về Giang Dương.
+            </p>
+            <p className="text-slate-400 text-sm">
+              Chưa có tài khoản?{" "}
+              <Link href="/register" className="text-blue-400 font-semibold hover:text-blue-300 transition-colors">
+                Đăng ký ngay
+              </Link>
             </p>
           </div>
         </div>
