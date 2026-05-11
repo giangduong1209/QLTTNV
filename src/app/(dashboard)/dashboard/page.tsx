@@ -133,19 +133,38 @@ export default function Dashboard() {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch("/api/stats");
-      if (!res.ok) throw new Error("Không thể tải dữ liệu thống kê");
+      // Add timestamp to prevent browser caching during the first login transition
+      const res = await fetch(`/api/stats?t=${Date.now()}`, {
+        cache: 'no-store',
+        headers: {
+          'Cache-Control': 'no-cache',
+          'Pragma': 'no-cache'
+        }
+      });
+      
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || "Không thể tải dữ liệu thống kê");
+      }
+      
       const json = await res.json();
       setData(json);
       setLastUpdated(new Date());
     } catch (e: any) {
+      console.error("Dashboard fetch error:", e);
       setError(e.message);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => { fetchStats(); }, []);
+  useEffect(() => {
+    // Small delay on first mount to ensure session cookies are fully recognized by the browser
+    const timer = setTimeout(() => {
+      fetchStats();
+    }, 100);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Computed
   const activeRate = data ? Math.round((data.kpi.active / data.kpi.total) * 100) : 0;
