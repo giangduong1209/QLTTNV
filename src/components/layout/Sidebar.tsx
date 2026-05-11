@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Users, Building2, BarChart3, Settings } from "lucide-react";
+import { Users, Building2, BarChart3, Settings, Shield } from "lucide-react";
 
 export function Sidebar() {
   const pathname = usePathname();
@@ -10,6 +10,7 @@ export function Sidebar() {
   const links = [
     { href: "/dashboard", label: "Tổng quan", icon: BarChart3 },
     { href: "/employees", label: "Nhân viên", icon: Users },
+    { href: "/users", label: "Quản lý tài khoản", icon: Shield },
   ];
 
   return (
