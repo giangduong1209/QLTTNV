@@ -1,15 +1,30 @@
 "use client";
 
-import { LogOut, Menu, User, AlertCircle } from "lucide-react";
-import { signOut } from "next-auth/react";
+import { LogOut, Menu, User, AlertCircle, Shield } from "lucide-react";
+import { signOut, useSession } from "next-auth/react";
 import { useState } from "react";
 
 export function Navbar() {
+  const { data: session } = useSession();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
   const handleLogout = () => {
     signOut({ callbackUrl: '/login' });
   };
+
+  const roleBadgeColors: Record<string, string> = {
+    admin: "bg-red-100 text-red-700",
+    manager: "bg-amber-100 text-amber-700",
+    staff: "bg-blue-100 text-blue-700",
+  };
+
+  const roleLabels: Record<string, string> = {
+    admin: "Quản trị viên",
+    manager: "Quản lý",
+    staff: "Nhân viên",
+  };
+
+  const userRole = session?.user?.role || "staff";
 
   return (
     <header className="bg-white border-b border-gray-200 h-16 flex items-center justify-between px-4 sm:px-6 relative">
@@ -19,11 +34,19 @@ export function Navbar() {
         </button>
       </div>
       <div className="flex items-center space-x-4">
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-3">
           <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700">
             <User className="w-5 h-5" />
           </div>
-          <span className="text-sm font-medium text-gray-700 hidden sm:block">Admin User</span>
+          <div className="hidden sm:flex flex-col items-end">
+            <span className="text-sm font-semibold text-gray-800 leading-tight">
+              {session?.user?.name || "Đang tải..."}
+            </span>
+            <span className={`text-[10px] font-medium px-1.5 py-0.5 rounded-full leading-tight inline-flex items-center gap-1 ${roleBadgeColors[userRole] || roleBadgeColors.staff}`}>
+              <Shield className="w-2.5 h-2.5" />
+              {roleLabels[userRole] || userRole}
+            </span>
+          </div>
         </div>
         <button 
           onClick={() => setShowLogoutConfirm(true)}
@@ -67,3 +90,4 @@ export function Navbar() {
     </header>
   );
 }
+
