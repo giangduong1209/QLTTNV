@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Employee from '@/models/Employee';
 import { Department, Position } from '@/models/Department';
+import User from '@/models/User';
+import bcrypt from 'bcrypt';
 
 export const dynamic = 'force-dynamic';
 
@@ -83,6 +85,16 @@ export async function POST(request: Request) {
     await Employee.deleteMany({});
     await Department.deleteMany({});
     await Position.deleteMany({});
+    await User.deleteMany({ username: 'admin' }); // Reset admin user specifically or all if preferred
+
+    // 1.5. Tạo tài khoản admin mặc định
+    const adminPasswordHash = await bcrypt.hash('admin123', 10);
+    await User.create({
+      username: 'admin',
+      email: 'admin@company.com',
+      passwordHash: adminPasswordHash,
+      role: 'Admin',
+    });
 
     // 2. Tạo phòng ban và chức vụ
     const deptDocs: any[] = [];
