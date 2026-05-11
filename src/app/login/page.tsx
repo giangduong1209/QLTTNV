@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { LogIn } from "lucide-react";
+import { LogIn, Loader2 } from "lucide-react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -10,21 +10,29 @@ export default function LoginPage() {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+    setIsLoading(true);
     
-    const res = await signIn("credentials", {
-      username,
-      password,
-      redirect: false,
-    });
+    try {
+      const res = await signIn("credentials", {
+        username,
+        password,
+        redirect: false,
+      });
 
-    if (res?.error) {
-      setError("Tên đăng nhập hoặc mật khẩu không chính xác");
-    } else {
-      router.push("/dashboard");
+      if (res?.error) {
+        setError("Tên đăng nhập hoặc mật khẩu không chính xác");
+        setIsLoading(false);
+      } else {
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("Đã xảy ra lỗi khi đăng nhập");
+      setIsLoading(false);
     }
   };
 
@@ -51,7 +59,8 @@ export default function LoginPage() {
             <input
               type="text"
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              disabled={isLoading}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
               placeholder="Nhập tên đăng nhập"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
@@ -62,7 +71,8 @@ export default function LoginPage() {
             <input
               type="password"
               required
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all"
+              disabled={isLoading}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all disabled:bg-gray-100 disabled:cursor-not-allowed"
               placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
@@ -71,7 +81,11 @@ export default function LoginPage() {
           
           <div className="flex items-center justify-between">
             <label className="flex items-center">
-              <input type="checkbox" className="rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+              <input 
+                type="checkbox" 
+                disabled={isLoading}
+                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500 disabled:opacity-50" 
+              />
               <span className="ml-2 text-sm text-gray-600">Ghi nhớ đăng nhập</span>
             </label>
             <a href="#" className="text-sm font-medium text-blue-600 hover:text-blue-500">Quên mật khẩu?</a>
@@ -79,9 +93,17 @@ export default function LoginPage() {
 
           <button
             type="submit"
-            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            disabled={isLoading}
+            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Đăng nhập
+            {isLoading ? (
+              <>
+                <Loader2 className="w-5 h-5 animate-spin" />
+                Đang xử lý...
+              </>
+            ) : (
+              "Đăng nhập"
+            )}
           </button>
         </form>
       </div>
