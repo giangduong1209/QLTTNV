@@ -7,8 +7,6 @@ import bcrypt from 'bcrypt';
 
 export const dynamic = 'force-dynamic';
 
-// ─── Dữ liệu mẫu Việt Nam ────────────────────────────────────────────────────
-
 const hoList = ['Nguyễn', 'Trần', 'Lê', 'Phạm', 'Hoàng', 'Huỳnh', 'Phan', 'Vũ', 'Võ', 'Đặng', 'Bùi', 'Đỗ', 'Hồ', 'Ngô', 'Dương', 'Lý'];
 const tenDemNam = ['Văn', 'Đình', 'Minh', 'Quốc', 'Hữu', 'Đức', 'Công', 'Tuấn', 'Thanh', 'Xuân'];
 const tenDemNu = ['Thị', 'Ngọc', 'Thanh', 'Thu', 'Hương', 'Lan', 'Mai', 'Bích', 'Phương', 'Hồng'];
@@ -75,19 +73,15 @@ function generateTaxId(): string {
   return Array.from({ length: 10 }, () => randomInt(0, 9)).join('');
 }
 
-// ─── Seed Handler ─────────────────────────────────────────────────────────────
-
 export async function POST(request: Request) {
   try {
     await dbConnect();
 
-    // 1. Xóa dữ liệu cũ
     await Employee.deleteMany({});
     await Department.deleteMany({});
     await Position.deleteMany({});
-    await User.deleteMany({ username: 'admin' }); // Reset admin user specifically or all if preferred
+    await User.deleteMany({ username: 'admin' });
 
-    // 1.5. Tạo tài khoản admin mặc định
     const adminPasswordHash = await bcrypt.hash('admin123', 10);
     await User.create({
       username: 'admin',
@@ -96,7 +90,6 @@ export async function POST(request: Request) {
       role: 'Admin',
     });
 
-    // 2. Tạo phòng ban và chức vụ
     const deptDocs: any[] = [];
     const posDocs: any[] = [];
 
@@ -118,7 +111,6 @@ export async function POST(request: Request) {
       }
     }
 
-    // 3. Tạo 500 nhân viên
     const employees: any[] = [];
     const usedIdCards = new Set<string>();
     const usedEmails = new Set<string>();
@@ -144,25 +136,21 @@ export async function POST(request: Request) {
       const ten = isNam ? rand(tenNam) : rand(tenNu);
       const fullName = `${ho} ${tenDem} ${ten}`;
 
-      // Chọn phòng ban ngẫu nhiên
       const dept = deptDocs[randomInt(0, deptDocs.length - 1)];
       const deptCode = departments.find(d => d.name === dept.name)?.code || 'KT';
       const posPool = posDocs.filter(p => String(p.deptId) === String(dept._id));
       const pos = rand(posPool);
 
-      // Sinh CCCD unique
       let idCard = generateIdCard();
       while (usedIdCards.has(idCard)) idCard = generateIdCard();
       usedIdCards.add(idCard);
 
-      // Sinh email unique
       const emailBase = `${ho.toLowerCase().replace(/\s/g, '')}.${ten.toLowerCase()}${i}`;
       const emailDomains = ['gmail.com', 'yahoo.com', 'company.vn', 'outlook.com'];
       let email = `${emailBase}@${rand(emailDomains)}`;
       while (usedEmails.has(email)) email = `${emailBase}${randomInt(1, 99)}@${rand(emailDomains)}`;
       usedEmails.add(email);
 
-      // Sinh SĐT unique
       let phone = generatePhone();
       while (usedPhones.has(phone)) phone = generatePhone();
       usedPhones.add(phone);
@@ -205,7 +193,6 @@ export async function POST(request: Request) {
       });
     }
 
-    // Insert theo batch để tránh timeout
     const BATCH_SIZE = 50;
     let inserted = 0;
     for (let b = 0; b < employees.length; b += BATCH_SIZE) {
@@ -215,7 +202,7 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      message: `✅ Đã tạo thành công ${inserted} nhân viên, ${deptDocs.length} phòng ban, và ${posDocs.length} chức vụ.`,
+      message: `Đã tạo thành công ${inserted} nhân viên, ${deptDocs.length} phòng ban, và ${posDocs.length} chức vụ.`,
       stats: {
         employees: inserted,
         departments: deptDocs.length,
@@ -228,7 +215,6 @@ export async function POST(request: Request) {
   }
 }
 
-// GET – trả về trạng thái hiện tại
 export async function GET() {
   try {
     await dbConnect();

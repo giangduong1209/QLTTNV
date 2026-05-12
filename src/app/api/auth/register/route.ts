@@ -16,7 +16,6 @@ export async function POST(req: Request) {
 
     await dbConnect();
 
-    // Check if user already exists
     const existingUser = await User.findOne({
       $or: [{ username }, { email }],
     });
@@ -28,15 +27,13 @@ export async function POST(req: Request) {
       );
     }
 
-    // Hash password
     const passwordHash = await bcrypt.hash(password, 10);
 
-    // Create new user
     const newUser = await User.create({
       username,
       email,
       passwordHash,
-      role: "Staff", // Default role
+      role: "Staff",
     });
 
     return NextResponse.json(

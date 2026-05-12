@@ -6,9 +6,6 @@ import { getServerSession } from "next-auth";
 export async function GET() {
   try {
     const session = await getServerSession();
-    // In a real app, you'd check if session.user.role === 'Admin'
-    // For now, let's just connect and return users
-    
     await dbConnect();
     const users = await User.find({}).select("-passwordHash").sort({ createdAt: -1 });
     

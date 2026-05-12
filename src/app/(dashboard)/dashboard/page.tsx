@@ -13,8 +13,6 @@ import {
   PolarGrid, PolarAngleAxis, PolarRadiusAxis,
 } from "recharts";
 
-// ─── Types ────────────────────────────────────────────────────────────────────
-
 interface StatsData {
   kpi: { total: number; active: number; resigned: number; newThisMonth: number };
   byDepartment: Array<{ name: string; code: string; total: number; active: number }>;
@@ -32,8 +30,6 @@ interface StatsData {
   avgSalaryByDept: Array<{ name: string; avgSalary: number; count: number }>;
 }
 
-// ─── Color Palettes ───────────────────────────────────────────────────────────
-
 const COLORS_DEPT = [
   "#6366f1","#06b6d4","#10b981","#f59e0b","#ef4444",
   "#8b5cf6","#ec4899","#14b8a6","#f97316","#84cc16",
@@ -42,15 +38,11 @@ const COLORS_GENDER = ["#6366f1","#ec4899","#94a3b8"];
 const COLORS_CONTRACT = ["#10b981","#f59e0b","#6366f1","#ef4444"];
 const COLORS_EDU = ["#84cc16","#06b6d4","#6366f1","#8b5cf6","#ef4444","#94a3b8"];
 
-// ─── Formatters ───────────────────────────────────────────────────────────────
-
 const fmtMoney = (v: number) =>
   v >= 1_000_000 ? `${(v / 1_000_000).toFixed(1)}M` : v.toLocaleString("vi-VN");
 
 const fmtDate = (iso: string) =>
   new Date(iso).toLocaleDateString("vi-VN", { day: "2-digit", month: "2-digit", year: "numeric" });
-
-// ─── Custom Tooltip ───────────────────────────────────────────────────────────
 
 const CustomTooltip = ({ active, payload, label }: any) => {
   if (!active || !payload?.length) return null;
@@ -68,13 +60,9 @@ const CustomTooltip = ({ active, payload, label }: any) => {
   );
 };
 
-// ─── Skeleton ─────────────────────────────────────────────────────────────────
-
 const Skeleton = ({ className = "" }: { className?: string }) => (
   <div className={`animate-pulse bg-gray-200 rounded-lg ${className}`} />
 );
-
-// ─── KPI Card ─────────────────────────────────────────────────────────────────
 
 interface KpiCardProps {
   label: string; value: number | string; icon: React.ElementType;
@@ -102,12 +90,9 @@ const KpiCard = ({ label, value, icon: Icon, gradient, sub, subColor = "text-eme
         <ArrowUpRight className="w-4 h-4" />
       </Link>
     )}
-    {/* Decorative circle */}
     <div className="absolute -bottom-4 -right-4 w-28 h-28 rounded-full bg-white/10 pointer-events-none" />
   </div>
 );
-
-// ─── Section Card ─────────────────────────────────────────────────────────────
 
 const Card = ({ title, icon: Icon, children, className = "" }: {
   title: string; icon?: React.ElementType; children: React.ReactNode; className?: string;
@@ -121,8 +106,6 @@ const Card = ({ title, icon: Icon, children, className = "" }: {
   </div>
 );
 
-// ─── Main Dashboard ───────────────────────────────────────────────────────────
-
 export default function Dashboard() {
   const [data, setData] = useState<StatsData | null>(null);
   const [loading, setLoading] = useState(true);
@@ -133,7 +116,6 @@ export default function Dashboard() {
     setLoading(true);
     setError("");
     try {
-      // Add timestamp to prevent browser caching during the first login transition
       const res = await fetch(`/api/stats?t=${Date.now()}`, {
         cache: 'no-store',
         headers: {
@@ -159,14 +141,12 @@ export default function Dashboard() {
   };
 
   useEffect(() => {
-    // Small delay on first mount to ensure session cookies are fully recognized by the browser
     const timer = setTimeout(() => {
       fetchStats();
     }, 100);
     return () => clearTimeout(timer);
   }, []);
 
-  // Computed
   const activeRate = data ? Math.round((data.kpi.active / data.kpi.total) * 100) : 0;
   const resignedRate = data ? Math.round((data.kpi.resigned / data.kpi.total) * 100) : 0;
   const genderData = data
@@ -179,7 +159,6 @@ export default function Dashboard() {
 
   return (
     <div className="space-y-6 max-w-[1600px] mx-auto">
-      {/* ── Header ─────────────────────────────────────────────────────────── */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="text-2xl font-bold text-gray-900">Tổng quan hệ thống</h1>
@@ -199,7 +178,6 @@ export default function Dashboard() {
         </button>
       </div>
 
-      {/* ── KPI Cards ──────────────────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
         <KpiCard
           label="Tổng nhân viên" value={data?.kpi.total ?? 0}
@@ -223,9 +201,7 @@ export default function Dashboard() {
         />
       </div>
 
-      {/* ── Row 2: Nhân viên theo phòng ban + Tăng trưởng ─────────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-5 gap-5">
-        {/* Biểu đồ cột – nhân viên theo phòng ban */}
         <Card title="Nhân viên theo phòng ban" icon={Building2} className="xl:col-span-3">
           {loading
             ? <Skeleton className="h-64" />
@@ -247,7 +223,6 @@ export default function Dashboard() {
             )}
         </Card>
 
-        {/* Biểu đồ tròn – giới tính */}
         <Card title="Phân bổ giới tính" icon={Users} className="xl:col-span-2">
           {loading
             ? <Skeleton className="h-64" />
@@ -283,9 +258,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* ── Row 3: Tăng trưởng + Lương theo phòng ban ────────────────────── */}
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-5">
-        {/* Area chart – tăng trưởng nhân sự theo năm */}
         <Card title="Tăng trưởng nhân sự theo năm" icon={TrendingUp}>
           {loading
             ? <Skeleton className="h-60" />
@@ -314,7 +287,6 @@ export default function Dashboard() {
             )}
         </Card>
 
-        {/* Bar chart ngang – lương trung bình theo phòng ban */}
         <Card title="Lương trung bình theo phòng ban (VND)" icon={Banknote}>
           {loading
             ? <Skeleton className="h-60" />
@@ -350,9 +322,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* ── Row 4: Phân bổ lương + Hợp đồng + Học vấn ───────────────────── */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        {/* Phân bổ mức lương */}
         <Card title="Phân bổ mức lương" icon={Banknote}>
           {loading
             ? <Skeleton className="h-52" />
@@ -373,7 +343,6 @@ export default function Dashboard() {
             )}
         </Card>
 
-        {/* Loại hợp đồng */}
         <Card title="Loại hợp đồng" icon={Briefcase}>
           {loading
             ? <Skeleton className="h-52" />
@@ -408,7 +377,6 @@ export default function Dashboard() {
             )}
         </Card>
 
-        {/* Trình độ học vấn */}
         <Card title="Trình độ học vấn" icon={GraduationCap}>
           {loading
             ? <Skeleton className="h-52" />
@@ -436,7 +404,6 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      {/* ── Row 5: Nhân viên gia nhập gần đây ────────────────────────────── */}
       <Card title="Nhân viên gia nhập gần đây" icon={CalendarDays}>
         {loading
           ? <Skeleton className="h-48" />

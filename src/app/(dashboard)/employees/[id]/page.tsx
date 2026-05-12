@@ -5,8 +5,8 @@ import { ArrowLeft, Save, Edit3 } from "lucide-react";
 import Link from "next/link";
 import { useRouter, useParams } from "next/navigation";
 import { toast } from "sonner";
-
-const EDUCATION_LEVELS = ["THPT", "Cao đẳng", "Đại học", "Thạc sĩ", "Tiến sĩ", "Khác"];
+import { SearchableSelect } from "@/components/ui/SearchableSelect";
+import { EDUCATION_LEVELS, GENDER_OPTIONS, CONTRACT_TYPES, STATUS_OPTIONS } from "@/lib/constants";
 
 const fieldClass =
   "w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none disabled:bg-gray-50 disabled:text-gray-500";
@@ -43,7 +43,10 @@ export default function EmployeeDetailsPage() {
 
   useEffect(() => {
     fetch("/api/departments")
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch departments");
+        return res.json();
+      })
       .then((data) => {
         setDepartments(data.departments || []);
         setPositions(data.positions || []);
@@ -92,7 +95,6 @@ export default function EmployeeDetailsPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Validate age (must be 18+ at join date)
     if (formData.dateOfBirth && formData.joinDate) {
       const dob = new Date(formData.dateOfBirth);
       const join = new Date(formData.joinDate);
@@ -185,12 +187,14 @@ export default function EmployeeDetailsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Giới tính *</label>
-              <select disabled={!isEditing} name="gender" value={formData.gender} onChange={handleChange} className={fieldClass} required>
-                <option value="">Chọn giới tính</option>
-                <option value="Nam">Nam</option>
-                <option value="Nữ">Nữ</option>
-                <option value="Khác">Khác</option>
-              </select>
+              <SearchableSelect
+                options={GENDER_OPTIONS}
+                value={formData.gender}
+                onChange={(val) => setFormData({ ...formData, gender: val })}
+                placeholder="Chọn giới tính"
+                searchPlaceholder="Tìm giới tính..."
+                disabled={!isEditing}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Số CMND/CCCD *</label>
@@ -198,10 +202,14 @@ export default function EmployeeDetailsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Trình độ học vấn</label>
-              <select disabled={!isEditing} name="educationLevel" value={formData.educationLevel} onChange={handleChange} className={fieldClass}>
-                <option value="">Chọn trình độ</option>
-                {EDUCATION_LEVELS.map((l) => <option key={l} value={l}>{l}</option>)}
-              </select>
+              <SearchableSelect
+                options={EDUCATION_LEVELS}
+                value={formData.educationLevel}
+                onChange={(val) => setFormData({ ...formData, educationLevel: val })}
+                placeholder="Chọn trình độ"
+                searchPlaceholder="Tìm trình độ..."
+                disabled={!isEditing}
+              />
             </div>
           </div>
         </div>
@@ -239,17 +247,25 @@ export default function EmployeeDetailsPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Phòng ban *</label>
-              <select disabled={!isEditing} name="departmentId" value={formData.departmentId} onChange={handleChange} className={fieldClass} required>
-                <option value="">Chọn phòng ban</option>
-                {departments.map((d) => <option key={d._id} value={d._id}>{d.name}</option>)}
-              </select>
+              <SearchableSelect
+                options={departments.map((d) => ({ value: d._id, label: d.name }))}
+                value={formData.departmentId}
+                onChange={(val) => setFormData({ ...formData, departmentId: val, positionId: "" })}
+                placeholder="Chọn phòng ban"
+                searchPlaceholder="Tìm phòng ban..."
+                disabled={!isEditing}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Chức vụ *</label>
-              <select disabled={!isEditing || !formData.departmentId} name="positionId" value={formData.positionId} onChange={handleChange} className={fieldClass} required>
-                <option value="">Chọn chức vụ</option>
-                {filteredPositions.map((p) => <option key={p._id} value={p._id}>{p.name}</option>)}
-              </select>
+              <SearchableSelect
+                options={filteredPositions.map((p) => ({ value: p._id, label: p.name }))}
+                value={formData.positionId}
+                onChange={(val) => setFormData({ ...formData, positionId: val })}
+                placeholder={formData.departmentId ? "Chọn chức vụ" : "Vui lòng chọn phòng ban trước"}
+                searchPlaceholder="Tìm chức vụ..."
+                disabled={!isEditing || !formData.departmentId}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Ngày vào làm *</label>
@@ -270,13 +286,14 @@ export default function EmployeeDetailsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Loại hợp đồng *</label>
-              <select disabled={!isEditing} name="contractType" value={formData.contractType} onChange={handleChange} className={fieldClass} required>
-                <option value="">Chọn loại hợp đồng</option>
-                <option value="Full-time">Full-time</option>
-                <option value="Part-time">Part-time</option>
-                <option value="Contract">Contract</option>
-                <option value="Internship">Internship</option>
-              </select>
+              <SearchableSelect
+                options={CONTRACT_TYPES}
+                value={formData.contractType}
+                onChange={(val) => setFormData({ ...formData, contractType: val })}
+                placeholder="Chọn loại hợp đồng"
+                searchPlaceholder="Tìm loại hợp đồng..."
+                disabled={!isEditing}
+              />
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Mức lương cơ bản (VNĐ) *</label>
@@ -284,10 +301,14 @@ export default function EmployeeDetailsPage() {
             </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">Trạng thái làm việc</label>
-              <select disabled={!isEditing} name="status" value={formData.status} onChange={handleChange} className={fieldClass} required>
-                <option value="Đang làm việc">Đang làm việc</option>
-                <option value="Đã nghỉ">Đã nghỉ</option>
-              </select>
+              <SearchableSelect
+                options={STATUS_OPTIONS}
+                value={formData.status}
+                onChange={(val) => setFormData({ ...formData, status: val })}
+                placeholder="Chọn trạng thái"
+                searchPlaceholder="Tìm trạng thái..."
+                disabled={!isEditing}
+              />
             </div>
           </div>
         </div>

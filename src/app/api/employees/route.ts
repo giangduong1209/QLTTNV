@@ -70,7 +70,6 @@ export async function POST(request: Request) {
     await dbConnect();
     const body = await request.json();
     
-    // Validate age (must be 18+ at join date)
     if (body.dateOfBirth && body.joinDate) {
       const dob = new Date(body.dateOfBirth);
       const join = new Date(body.joinDate);

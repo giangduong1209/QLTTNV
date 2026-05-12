@@ -12,7 +12,6 @@ export async function GET() {
     const now = new Date();
     const firstDayOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
 
-    // Parallelize all main data fetching tasks
     const [
       kpiCounts,
       byDepartment,
@@ -24,7 +23,6 @@ export async function GET() {
       avgSalaryByDept,
       recentHires
     ] = await Promise.all([
-      // 1. KPI Counts
       Promise.all([
         Employee.countDocuments(),
         Employee.countDocuments({ status: 'Đang làm việc' }),
@@ -32,7 +30,6 @@ export async function GET() {
         Employee.countDocuments({ joinDate: { $gte: firstDayOfMonth } }),
       ]),
 
-      // 2. Department Stats
       Employee.aggregate([
         {
           $group: {
@@ -61,24 +58,20 @@ export async function GET() {
         { $sort: { total: -1 } },
       ]),
 
-      // 3. Gender Distribution
       Employee.aggregate([
         { $group: { _id: '$gender', count: { $sum: 1 } } },
       ]),
 
-      // 4. Contract Types
       Employee.aggregate([
         { $group: { _id: '$contractType', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ]),
 
-      // 5. Education Levels
       Employee.aggregate([
         { $group: { _id: '$educationLevel', count: { $sum: 1 } } },
         { $sort: { count: -1 } },
       ]),
 
-      // 6. Growth Data
       Employee.aggregate([
         {
           $group: {
@@ -89,7 +82,6 @@ export async function GET() {
         { $sort: { _id: 1 } },
       ]),
 
-      // 7. Salary Distribution (using bucket for performance)
       Employee.aggregate([
         { $match: { status: 'Đang làm việc' } },
         {
@@ -102,7 +94,6 @@ export async function GET() {
         }
       ]),
 
-      // 8. Average Salary by Dept
       Employee.aggregate([
         { $match: { status: 'Đang làm việc' } },
         {
@@ -131,7 +122,6 @@ export async function GET() {
         { $sort: { avgSalary: -1 } },
       ]),
 
-      // 9. Recent Hires
       Employee.find({ status: 'Đang làm việc' })
         .populate('departmentId', 'name')
         .populate('positionId', 'name')
@@ -140,7 +130,6 @@ export async function GET() {
         .select('employeeCode fullName gender joinDate baseSalary departmentId positionId'),
     ]);
 
-    // Format results
     const [total, active, resigned, newThisMonth] = kpiCounts;
     
     const genderMap: Record<string, number> = {};

@@ -1,25 +1,22 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import { Department, Position } from '@/models/Department';
-import { seedDepartments } from '@/lib/seed-data';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
+  console.log('GET /api/departments called');
   try {
     await dbConnect();
-    const departments = await Department.find({});
-    const positions = await Position.find({});
-    
+    console.log('Database connected in departments API');
+    const [departments, positions] = await Promise.all([
+      Department.find({}).sort({ name: 1 }),
+      Position.find({}).sort({ name: 1 }),
+    ]);
+    console.log(`Found ${departments.length} departments and ${positions.length} positions`);
     return NextResponse.json({ departments, positions });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
-  }
-}
-
-export async function POST() {
-  try {
-    const result = await seedDepartments();
-    return NextResponse.json(result);
-  } catch (error: any) {
+    console.error('Error in GET /api/departments:', error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }

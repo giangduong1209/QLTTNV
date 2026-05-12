@@ -25,7 +25,6 @@ export async function PUT(request: Request, context: { params: Promise<{ id: str
     const params = await context.params;
     const body = await request.json();
 
-    // Validate age (must be 18+ at join date)
     if (body.dateOfBirth && body.joinDate) {
       const dob = new Date(body.dateOfBirth);
       const join = new Date(body.joinDate);

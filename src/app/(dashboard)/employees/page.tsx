@@ -9,8 +9,6 @@ import {
 import Link from "next/link";
 import { toast } from "sonner";
 
-// ─── Constants ────────────────────────────────────────────────────────────────
-
 const PAGE_SIZES = [10, 20, 50, 100];
 
 const EDUCATION_LEVELS = [
@@ -28,15 +26,11 @@ const EDUCATION_BADGE: Record<string, string> = {
 
 const STATUS_OPTIONS = ["Đang làm việc", "Đã nghỉ"];
 
-// ─── Helpers ─────────────────────────────────────────────────────────────────
-
 function formatDate(dateStr: string) {
   if (!dateStr) return "—";
   const d = new Date(dateStr);
   return `${String(d.getDate()).padStart(2, "0")}/${String(d.getMonth() + 1).padStart(2, "0")}/${d.getFullYear()}`;
 }
-
-// ─── Sort Button ─────────────────────────────────────────────────────────────
 
 type SortOrder = "asc" | "desc";
 interface SortBtnProps {
@@ -65,8 +59,6 @@ function SortBtn({ label, field, sortBy, sortOrder, onSort }: SortBtnProps) {
   );
 }
 
-// ─── Active Filter Badge ──────────────────────────────────────────────────────
-
 function ActiveBadge({ label, onRemove }: { label: string; onRemove: () => void }) {
   return (
     <span className="inline-flex items-center gap-1 pl-2.5 pr-1.5 py-0.5 bg-indigo-50 text-indigo-700 text-xs font-medium rounded-full border border-indigo-100">
@@ -78,47 +70,39 @@ function ActiveBadge({ label, onRemove }: { label: string; onRemove: () => void 
   );
 }
 
-// ─── Main Component ───────────────────────────────────────────────────────────
-
 export default function EmployeesPage() {
-  // Search & filter state
   const [searchInput, setSearchInput] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
   const [departmentId, setDepartmentId] = useState("");
   const [educationLevel, setEducationLevel] = useState("");
   const [status, setStatus] = useState("");
 
-  // Sort state
   const [sortBy, setSortBy] = useState("createdAt");
   const [sortOrder, setSortOrder] = useState<SortOrder>("desc");
 
-  // Data state
   const [employees, setEmployees] = useState<any[]>([]);
   const [departments, setDepartments] = useState<{ _id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [employeeToDelete, setEmployeeToDelete] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Pagination state
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(20);
   const [total, setTotal] = useState(0);
   const [totalPages, setTotalPages] = useState(0);
 
-  // ── Fetch departments once ────────────────────────────────────────────────
-
   useEffect(() => {
     fetch("/api/departments")
-      .then((r) => r.json())
+      .then((r) => {
+        if (!r.ok) throw new Error("Failed to fetch departments");
+        return r.json();
+      })
       .then((data) => {
-        // API trả về { departments: [...], positions: [...] }
         if (Array.isArray(data?.departments)) setDepartments(data.departments);
         else if (Array.isArray(data)) setDepartments(data);
       })
       .catch(console.error);
   }, []);
-
-  // ── Fetch employees ───────────────────────────────────────────────────────
 
   const fetchEmployees = useCallback(() => {
     setLoading(true);
@@ -133,7 +117,10 @@ export default function EmployeesPage() {
     params.set("limit", String(limit));
 
     fetch(`/api/employees?${params.toString()}`, { cache: "no-store" })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) throw new Error("Failed to fetch employees");
+        return res.json();
+      })
       .then((result) => {
         setEmployees(Array.isArray(result.data) ? result.data : []);
         setTotal(result.total ?? 0);
@@ -149,8 +136,6 @@ export default function EmployeesPage() {
   useEffect(() => {
     fetchEmployees();
   }, [fetchEmployees]);
-
-  // ── Handlers ──────────────────────────────────────────────────────────────
 
   const handleSearch = () => {
     setPage(1);
@@ -204,14 +189,12 @@ export default function EmployeesPage() {
     }
   };
 
-  // Computed
   const startItem = total === 0 ? 0 : (page - 1) * limit + 1;
   const endItem = Math.min(page * limit, total);
   const activeFilterCount = [departmentId, educationLevel, status, searchTerm].filter(Boolean).length;
 
   return (
     <div className="space-y-6">
-      {/* ── Delete Confirmation Modal ───────────────────────────────────────── */}
       {employeeToDelete && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 border border-slate-100 transform animate-in zoom-in-95 duration-200">
@@ -252,7 +235,6 @@ export default function EmployeesPage() {
         </div>
       )}
 
-      {/* ── Page Header ────────────────────────────────────────────────────── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-gray-900">Danh sách nhân viên</h1>
@@ -273,9 +255,7 @@ export default function EmployeesPage() {
       </div>
 
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        {/* ── Search & Filter Bar ─────────────────────────────────────────── */}
         <div className="p-4 border-b border-gray-100 space-y-3">
-          {/* Row 1: search input */}
           <div className="flex flex-col sm:flex-row gap-3">
             <div className="relative flex-1">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 w-4 h-4" />
@@ -299,9 +279,7 @@ export default function EmployeesPage() {
             </button>
           </div>
 
-          {/* Row 2: filter dropdowns */}
           <div className="flex flex-wrap gap-3 items-center">
-            {/* Lọc phòng ban */}
             <div className="flex items-center gap-2">
               <Filter className="w-4 h-4 text-gray-400 flex-shrink-0" />
               <select
@@ -317,7 +295,6 @@ export default function EmployeesPage() {
               </select>
             </div>
 
-            {/* Lọc trình độ */}
             <select
               id="filter-education"
               value={educationLevel}
@@ -330,7 +307,6 @@ export default function EmployeesPage() {
               ))}
             </select>
 
-            {/* Lọc trạng thái */}
             <select
               id="filter-status"
               value={status}
@@ -343,7 +319,6 @@ export default function EmployeesPage() {
               ))}
             </select>
 
-            {/* Số dòng / trang */}
             <div className="flex items-center gap-1.5 text-sm text-gray-600 ml-auto">
               <span>Hiển thị:</span>
               <select
@@ -357,7 +332,6 @@ export default function EmployeesPage() {
             </div>
           </div>
 
-          {/* Row 3: active filter badges */}
           {activeFilterCount > 0 && (
             <div className="flex flex-wrap gap-2 items-center pt-1">
               <span className="text-xs text-gray-400">Đang lọc:</span>
@@ -380,7 +354,6 @@ export default function EmployeesPage() {
           )}
         </div>
 
-        {/* ── Table ──────────────────────────────────────────────────────── */}
         <div className="overflow-x-auto">
           <table className="w-full text-left border-collapse">
             <thead>
@@ -430,14 +403,12 @@ export default function EmployeesPage() {
               ) : (
                 employees.map((emp) => (
                   <tr key={emp._id} className="hover:bg-gray-50/70 transition-colors">
-                    {/* Mã NV */}
                     <td className="px-4 py-3 whitespace-nowrap">
                       <span className="font-mono text-xs bg-indigo-50 text-indigo-700 px-2 py-0.5 rounded-md font-semibold">
                         {emp.employeeCode}
                       </span>
                     </td>
 
-                    {/* Họ tên */}
                     <td className="px-4 py-3 text-sm text-gray-900">
                       <div className="flex items-center gap-2.5">
                         <div
@@ -450,10 +421,8 @@ export default function EmployeesPage() {
                       </div>
                     </td>
 
-                    {/* Ngày sinh */}
                     <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{formatDate(emp.dateOfBirth)}</td>
 
-                    {/* Ngày vào làm */}
                     <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">
                       <span className="inline-flex items-center gap-1">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 flex-shrink-0" />
@@ -461,10 +430,8 @@ export default function EmployeesPage() {
                       </span>
                     </td>
 
-                    {/* SĐT */}
                     <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{emp.phone || "—"}</td>
 
-                    {/* Trình độ */}
                     <td className="px-4 py-3 text-sm">
                       {emp.educationLevel ? (
                         <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${EDUCATION_BADGE[emp.educationLevel] ?? "bg-gray-100 text-gray-600"}`}>
@@ -473,13 +440,10 @@ export default function EmployeesPage() {
                       ) : <span className="text-gray-300">—</span>}
                     </td>
 
-                    {/* Phòng ban */}
                     <td className="px-4 py-3 text-sm text-gray-600 whitespace-nowrap">{emp.departmentId?.name || "N/A"}</td>
 
-                    {/* Chức vụ */}
                     <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{emp.positionId?.name || "N/A"}</td>
 
-                    {/* Trạng thái */}
                     <td className="px-4 py-3 text-sm whitespace-nowrap">
                       <span className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium ${emp.status === "Đang làm việc" ? "bg-emerald-50 text-emerald-700" : "bg-red-50 text-red-600"}`}>
                         <span className={`w-1.5 h-1.5 rounded-full ${emp.status === "Đang làm việc" ? "bg-emerald-500" : "bg-red-400"}`} />
@@ -487,7 +451,6 @@ export default function EmployeesPage() {
                       </span>
                     </td>
 
-                    {/* Thao tác */}
                     <td className="px-4 py-3 text-sm text-right whitespace-nowrap">
                       <Link
                         href={`/employees/${emp._id}`}
@@ -510,7 +473,6 @@ export default function EmployeesPage() {
           </table>
         </div>
 
-        {/* ── Pagination Footer ───────────────────────────────────────────── */}
         <div className="px-4 py-3 border-t border-gray-100 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-gray-600 bg-gray-50/50">
           <div>
             {total > 0

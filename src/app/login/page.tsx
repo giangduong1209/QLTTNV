@@ -39,13 +39,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
-      {/* Decorative Background Pattern */}
       <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
            style={{ backgroundImage: `radial-gradient(#4f46e5 1px, transparent 1px)`, backgroundSize: '24px 24px' }}></div>
 
       <div className="relative z-10 max-w-md w-full">
         <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden">
-          {/* Top accent line */}
           <div className="h-1.5 bg-gradient-to-r from-indigo-500 to-blue-500"></div>
           
           <div className="p-8 sm:p-10">
