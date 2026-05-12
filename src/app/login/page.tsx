@@ -144,10 +144,6 @@ export default function LoginPage() {
             </div>
           </div>
         </div>
-        
-        <p className="mt-8 text-center text-slate-400 text-xs font-medium uppercase tracking-widest">
-          &copy; 2026 QLTTNV Portal • Version 1.0
-        </p>
       </div>
     </div>
   );

@@ -4,13 +4,11 @@ export const EDUCATION_LEVELS = [
   { value: "Đại học", label: "Đại học" },
   { value: "Thạc sĩ", label: "Thạc sĩ" },
   { value: "Tiến sĩ", label: "Tiến sĩ" },
-  { value: "Khác", label: "Khác" },
 ];
 
 export const GENDER_OPTIONS = [
   { value: "Nam", label: "Nam" },
   { value: "Nữ", label: "Nữ" },
-  { value: "Khác", label: "Khác" },
 ];
 
 export const CONTRACT_TYPES = [

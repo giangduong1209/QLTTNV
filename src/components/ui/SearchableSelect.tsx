@@ -147,7 +147,7 @@ export function SearchableSelect({
           </div>
         </div>
       )}
-      <input type="hidden" name={name} value={value} />
+      {/* <input type="hidden" name={name} value={value} /> */}
     </div>
   );
 }
