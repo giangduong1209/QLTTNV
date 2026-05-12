@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Plus, Search, Filter, Trash2,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
-  ArrowUpDown, ArrowUp, ArrowDown, X,
+  ArrowUpDown, ArrowUp, ArrowDown, X, Loader2
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
@@ -97,6 +97,7 @@ export default function EmployeesPage() {
   const [departments, setDepartments] = useState<{ _id: string; name: string }[]>([]);
   const [loading, setLoading] = useState(true);
   const [employeeToDelete, setEmployeeToDelete] = useState<string | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Pagination state
   const [page, setPage] = useState(1);
@@ -188,6 +189,7 @@ export default function EmployeesPage() {
 
   const confirmDelete = async () => {
     if (!employeeToDelete) return;
+    setIsDeleting(true);
     try {
       const res = await fetch(`/api/employees/${employeeToDelete}`, { method: "DELETE" });
       if (res.ok) {
@@ -200,6 +202,9 @@ export default function EmployeesPage() {
       }
     } catch (err) {
       console.error(err);
+      toast.error("Đã xảy ra lỗi khi kết nối máy chủ");
+    } finally {
+      setIsDeleting(false);
     }
   };
 
@@ -212,13 +217,40 @@ export default function EmployeesPage() {
     <div className="space-y-6">
       {/* ── Delete Confirmation Modal ───────────────────────────────────────── */}
       {employeeToDelete && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/40 backdrop-blur-md">
-          <div className="bg-white rounded-xl shadow-2xl p-6 max-w-sm w-full mx-4 border border-gray-100">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Xác nhận xóa</h3>
-            <p className="text-gray-500 mb-6">Bạn có chắc chắn muốn xóa nhân viên này? Hành động này không thể hoàn tác.</p>
-            <div className="flex justify-end space-x-3">
-              <button onClick={() => setEmployeeToDelete(null)} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-medium">Hủy bỏ</button>
-              <button onClick={confirmDelete} className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors font-medium">Đồng ý xóa</button>
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm animate-in fade-in duration-200">
+          <div className="bg-white rounded-2xl shadow-2xl p-6 max-w-sm w-full mx-4 border border-slate-100 transform animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center">
+                <Trash2 className="w-6 h-6 text-red-600" />
+              </div>
+            </div>
+            <h3 className="text-xl font-bold text-slate-900 mb-2 text-center">Xác nhận xóa</h3>
+            <p className="text-slate-500 mb-8 leading-relaxed text-center">
+              Bạn có chắc chắn muốn xóa nhân viên này? <br />
+              <span className="font-semibold text-red-600">Hành động này không thể hoàn tác.</span>
+            </p>
+            <div className="flex gap-3">
+              <button
+                disabled={isDeleting}
+                onClick={() => setEmployeeToDelete(null)}
+                className="flex-1 px-4 py-3 bg-slate-100 text-slate-700 rounded-xl hover:bg-slate-200 disabled:opacity-50 disabled:cursor-not-allowed transition-all font-semibold"
+              >
+                Hủy bỏ
+              </button>
+              <button
+                disabled={isDeleting}
+                onClick={confirmDelete}
+                className="flex-[1.5] px-4 py-3 bg-red-600 text-white rounded-xl hover:bg-red-700 disabled:opacity-70 disabled:cursor-not-allowed transition-all font-semibold flex items-center justify-center gap-2 shadow-lg shadow-red-200 active:scale-[0.98]"
+              >
+                {isDeleting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    Đang xóa...
+                  </>
+                ) : (
+                  "Đồng ý xóa"
+                )}
+              </button>
             </div>
           </div>
         </div>
