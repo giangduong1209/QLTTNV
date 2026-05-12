@@ -155,17 +155,7 @@ export default function RegisterPage() {
               </div>
             </div>
             
-            <div className="col-span-2 flex items-center">
-              <label className="flex items-center cursor-pointer group">
-                <input 
-                  type="checkbox" 
-                  required
-                  disabled={isLoading}
-                  className="w-5 h-5 rounded-md bg-slate-800 border-slate-700 text-emerald-500 focus:ring-emerald-500/50" 
-                />
-                <span className="ml-3 text-sm text-slate-400 group-hover:text-slate-300 transition-colors">Tôi đồng ý với các điều khoản dịch vụ</span>
-              </label>
-            </div>
+
 
             <button
               type="submit"

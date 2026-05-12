@@ -7,9 +7,11 @@ import { useState } from "react";
 export function Navbar() {
   const { data: session } = useSession();
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
-  const handleLogout = () => {
-    signOut({ callbackUrl: '/login' });
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    await signOut({ callbackUrl: '/login' });
   };
 
   const roleBadgeColors: Record<string, string> = {
@@ -73,13 +75,22 @@ export function Navbar() {
             <div className="bg-gray-50 px-6 py-4 flex flex-col sm:flex-row-reverse gap-2">
               <button
                 onClick={handleLogout}
-                className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors shadow-sm"
+                disabled={isLoggingOut}
+                className="w-full sm:w-auto px-4 py-2 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transition-colors shadow-sm disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
               >
-                Đăng xuất ngay
+                {isLoggingOut ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Đang đăng xuất...
+                  </>
+                ) : (
+                  "Đăng xuất ngay"
+                )}
               </button>
               <button
                 onClick={() => setShowLogoutConfirm(false)}
-                className="w-full sm:w-auto px-4 py-2 bg-white text-gray-700 border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition-colors"
+                disabled={isLoggingOut}
+                className="w-full sm:w-auto px-4 py-2 bg-white text-gray-700 border border-gray-200 rounded-xl font-semibold hover:bg-gray-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 Hủy bỏ
               </button>
