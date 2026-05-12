@@ -48,144 +48,139 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden bg-[#0f172a] flex items-center justify-center p-4">
-      {/* Animated Background Elements */}
-      <div className="absolute top-0 left-0 w-full h-full overflow-hidden z-0">
-        <div className="absolute top-[-10%] right-[-10%] w-[40%] h-[40%] rounded-full bg-indigo-600/20 blur-[120px] animate-pulse"></div>
-        <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] rounded-full bg-blue-600/20 blur-[120px] animate-pulse [animation-delay:2s]"></div>
-        <div className="absolute bottom-[20%] right-[10%] w-[20%] h-[20%] rounded-full bg-emerald-600/10 blur-[80px] animate-bounce [animation-duration:12s]"></div>
-      </div>
+    <div className="min-h-screen bg-slate-50 flex items-center justify-center p-4 font-sans">
+      {/* Decorative Background Pattern */}
+      <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" 
+           style={{ backgroundImage: `radial-gradient(#4f46e5 1px, transparent 1px)`, backgroundSize: '24px 24px' }}></div>
 
-      {/* Register Card */}
-      <div className="relative z-10 max-w-lg w-full">
-        <div className="backdrop-blur-xl bg-white/10 rounded-3xl shadow-2xl border border-white/20 p-8 sm:p-10 overflow-hidden group">
+      <div className="relative z-10 max-w-xl w-full">
+        <div className="bg-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.05)] border border-slate-100 overflow-hidden">
           {/* Top accent line */}
-          <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-emerald-500 via-teal-500 to-blue-500"></div>
+          <div className="h-1.5 bg-gradient-to-r from-emerald-500 to-teal-500"></div>
           
-          <div className="text-center mb-8">
-            <div className="relative inline-flex mb-6">
-              <div className="absolute inset-0 bg-emerald-500 blur-2xl opacity-20 rounded-full animate-pulse"></div>
-              <div className="relative flex items-center justify-center w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 text-white shadow-lg transform transition-transform group-hover:scale-110 duration-500">
-                <UserPlus className="w-10 h-10" />
+          <div className="p-8 sm:p-10">
+            <div className="text-center mb-10">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-emerald-50 text-emerald-600 mb-6">
+                <UserPlus className="w-8 h-8" />
               </div>
+              <h1 className="text-3xl font-bold text-slate-900 tracking-tight mb-2">
+                Tạo tài khoản
+              </h1>
             </div>
-            <h1 className="text-3xl font-extrabold text-white tracking-tight mb-2">
-              Tạo <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">Tài khoản</span>
-            </h1>
-            <p className="text-slate-400 font-medium">Tham gia hệ thống quản lý nhân sự ngay hôm nay</p>
-          </div>
 
-          {error && (
-            <div className="mb-6 p-4 bg-red-500/10 border border-red-500/20 text-red-400 rounded-2xl text-sm flex items-center gap-3 animate-shake">
-              <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></div>
-              {error}
-            </div>
-          )}
+            {error && (
+              <div className="mb-8 p-4 bg-red-50 border border-red-100 text-red-600 rounded-2xl text-sm flex items-center gap-3 animate-shake">
+                <div className="w-1.5 h-1.5 rounded-full bg-red-500"></div>
+                {error}
+              </div>
+            )}
 
-          <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2 col-span-2 md:col-span-1">
-              <label className="text-sm font-semibold text-slate-300 ml-1">Tên đăng nhập</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-emerald-400 transition-colors">
-                  <User className="w-5 h-5" />
+            <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="space-y-1.5 col-span-2 md:col-span-1">
+                <label className="text-sm font-semibold text-slate-700 ml-1">Tên đăng nhập</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                    <User className="w-5 h-5" />
+                  </div>
+                  <input
+                    type="text"
+                    required
+                    disabled={isLoading}
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="Tên đăng nhập"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
                 </div>
-                <input
-                  type="text"
-                  required
-                  disabled={isLoading}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-2xl text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800/80"
-                  placeholder="john_doe"
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                />
               </div>
-            </div>
 
-            <div className="space-y-2 col-span-2 md:col-span-1">
-              <label className="text-sm font-semibold text-slate-300 ml-1">Email</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-emerald-400 transition-colors">
-                  <Mail className="w-5 h-5" />
+              <div className="space-y-1.5 col-span-2 md:col-span-1">
+                <label className="text-sm font-semibold text-slate-700 ml-1">Email</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                    <Mail className="w-5 h-5" />
+                  </div>
+                  <input
+                    type="email"
+                    required
+                    disabled={isLoading}
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="name@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                  />
                 </div>
-                <input
-                  type="email"
-                  required
-                  disabled={isLoading}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-2xl text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800/80"
-                  placeholder="name@example.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                />
               </div>
-            </div>
 
-            <div className="space-y-2 col-span-2 md:col-span-1">
-              <label className="text-sm font-semibold text-slate-300 ml-1">Mật khẩu</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-emerald-400 transition-colors">
-                  <Lock className="w-5 h-5" />
+              <div className="space-y-1.5 col-span-2 md:col-span-1">
+                <label className="text-sm font-semibold text-slate-700 ml-1">Mật khẩu</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                    <Lock className="w-5 h-5" />
+                  </div>
+                  <input
+                    type="password"
+                    required
+                    disabled={isLoading}
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                  />
                 </div>
-                <input
-                  type="password"
-                  required
-                  disabled={isLoading}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-2xl text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800/80"
-                  placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                />
               </div>
-            </div>
 
-            <div className="space-y-2 col-span-2 md:col-span-1">
-              <label className="text-sm font-semibold text-slate-300 ml-1">Xác nhận mật khẩu</label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-500 group-focus-within:text-emerald-400 transition-colors">
-                  <ShieldCheck className="w-5 h-5" />
+              <div className="space-y-1.5 col-span-2 md:col-span-1">
+                <label className="text-sm font-semibold text-slate-700 ml-1">Xác nhận mật khẩu</label>
+                <div className="relative group">
+                  <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400 group-focus-within:text-emerald-500 transition-colors">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <input
+                    type="password"
+                    required
+                    disabled={isLoading}
+                    className="w-full pl-12 pr-4 py-3.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 placeholder-slate-400 focus:ring-4 focus:ring-emerald-500/10 focus:border-emerald-500 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                    placeholder="••••••••"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                  />
                 </div>
-                <input
-                  type="password"
-                  required
-                  disabled={isLoading}
-                  className="w-full pl-12 pr-4 py-3.5 bg-slate-800/50 border border-slate-700 rounded-2xl text-white placeholder-slate-500 focus:ring-2 focus:ring-emerald-500/50 focus:border-emerald-500/50 outline-none transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-800/80"
-                  placeholder="••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                />
               </div>
+              
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="col-span-2 mt-4 py-4 px-6 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-200 transition-all active:scale-[0.98] focus:outline-none focus:ring-4 focus:ring-emerald-500/20 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 group/btn"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    Đang tạo tài khoản...
+                  </>
+                ) : (
+                  <>
+                    Đăng ký tài khoản
+                    <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
+                  </>
+                )}
+              </button>
+            </form>
+
+            <div className="mt-8 pt-8 border-t border-slate-100 text-center">
+              <p className="text-slate-500 text-sm">
+                Đã có tài khoản?{" "}
+                <Link href="/login" className="text-emerald-600 font-bold hover:text-emerald-700 transition-colors">
+                  Đăng nhập ngay
+                </Link>
+              </p>
             </div>
-            
-
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="col-span-2 w-full py-4 px-6 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold rounded-2xl shadow-lg shadow-emerald-500/25 transition-all active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 focus:ring-offset-[#0f172a] disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2 group/btn"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-5 h-5 animate-spin" />
-                  Đang tạo tài khoản...
-                </>
-              ) : (
-                <>
-                  Đăng ký tài khoản
-                  <ArrowRight className="w-5 h-5 group-hover/btn:translate-x-1 transition-transform" />
-                </>
-              )}
-            </button>
-          </form>
-
-          {/* Footer info */}
-          <div className="mt-10 pt-8 border-t border-slate-700/50 text-center">
-            <p className="text-slate-500 text-sm">
-              Đã có tài khoản?{" "}
-              <Link href="/login" className="text-emerald-400 font-semibold hover:text-emerald-300 transition-colors">
-                Đăng nhập ngay
-              </Link>
-            </p>
           </div>
         </div>
+        
+        <p className="mt-8 text-center text-slate-400 text-xs font-medium uppercase tracking-widest">
+          &copy; 2026 QLTTNV Portal • Version 1.0
+        </p>
       </div>
     </div>
   );
