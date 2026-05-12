@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/mongodb';
 import Employee from '@/models/Employee';
-import { Department } from '@/models/Department';
+import '@/models/Department';
 
 export const dynamic = 'force-dynamic';
 

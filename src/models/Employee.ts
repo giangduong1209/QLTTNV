@@ -1,5 +1,5 @@
 import mongoose, { Schema, Document } from 'mongoose';
-
+import './Department';
 export interface IEmployee extends Document {
   employeeCode: string;
   fullName: string;
