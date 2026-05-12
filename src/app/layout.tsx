@@ -7,7 +7,7 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "HR Management System",
-  description: "Hệ thống Quản lý Thông tin Nhân viên chuyên nghiệp",
+  description: "Hệ thống Quản lý Thông tin Nhân viên",
 };
 
 export default function RootLayout({
