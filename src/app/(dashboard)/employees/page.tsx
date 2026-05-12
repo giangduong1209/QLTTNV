@@ -157,10 +157,6 @@ export default function EmployeesPage() {
     setSearchTerm(searchInput);
   };
 
-  const handleFilterChange = () => {
-    setPage(1);
-  };
-
   const handleSort = (field: string) => {
     if (sortBy === field) {
       setSortOrder((o) => (o === "asc" ? "desc" : "asc"));
