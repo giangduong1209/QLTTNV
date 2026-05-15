@@ -4,10 +4,12 @@ import { useState, useEffect, useCallback } from "react";
 import {
   Plus, Search, Filter, Trash2,
   ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight,
-  ArrowUpDown, ArrowUp, ArrowDown, X, Loader2
+  ArrowUpDown, ArrowUp, ArrowDown, X, Loader2,
+  Download
 } from "lucide-react";
 import Link from "next/link";
 import { toast } from "sonner";
+import { exportEmployeeWord } from "@/utils/exportWord";
 
 const PAGE_SIZES = [10, 20, 50, 100];
 
@@ -452,6 +454,13 @@ export default function EmployeesPage() {
                     </td>
 
                     <td className="px-4 py-3 text-sm text-right whitespace-nowrap">
+                      <button
+                        onClick={() => exportEmployeeWord(emp)}
+                        className="text-gray-400 hover:text-indigo-600 mr-3 transition-colors"
+                        title="Tải sơ yếu lý lịch"
+                      >
+                        <Download className="w-4 h-4 inline" />
+                      </button>
                       <Link
                         href={`/employees/${emp._id}`}
                         className="text-indigo-500 hover:text-indigo-700 mr-3 transition-colors font-medium text-xs"
